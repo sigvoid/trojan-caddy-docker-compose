@@ -1,25 +1,17 @@
-FROM alpine:3.9
-
-ARG VERSION='v1.16.0'
-
-RUN apk add --no-cache --virtual .build-deps \
-        build-base \
-        cmake \
-        boost-dev \
-        openssl-dev \
-        mariadb-connector-c-dev \
+FROM golang:alpine3.15 AS builder
+WORKDIR /trojan-go
+RUN apk add \
         git \
-    && git clone --branch=${VERSION} https://github.com/trojan-gfw/trojan.git \
-    && (cd trojan && cmake . && make -j $(nproc) && strip -s trojan \
-    && mv trojan /usr/local/bin) \
-    && rm -rf trojan \
-    && apk del .build-deps \
-    && apk add --no-cache --virtual .trojan-rundeps \
-        libstdc++ \
-        boost-system \
-        boost-program_options \
-        mariadb-connector-c
+        make \
+        gcc \
+        g++ \
+        libtool \
+    && git clone --branch=latest https://github.com/fregie/trojan-go.git \
+    && cd trojan-go \
+    && make trojan-go
 
+FROM alpine
 WORKDIR /config
-
-CMD ["/bin/sh", "/wait_for_caddy.sh", "trojan", "config.json"]
+RUN apk add --no-cache tzdata ca-certificates
+COPY --from=builder /trojan-go/build /usr/local/bin/
+CMD ["/bin/sh", "/wait_for_caddy.sh", "trojan-go", "-config", "config.json"]

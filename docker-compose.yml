@@ -13,6 +13,8 @@ services:
         - caddy:__DOCKER_CADDY__
       depends_on: 
         - caddy
+      extra_hosts:
+        - "host.docker.internal:host-gateway"
 
   caddy:
       image: caddy:latest
