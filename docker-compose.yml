@@ -15,10 +15,12 @@ services:
         - caddy
 
   caddy:
-      image: abiosoft/caddy
+      image: caddy:latest
       ports:
         - "80:80"
       volumes:
         - ./wwwroot:/usr/src
-        - ./caddy/Caddyfile:/etc/Caddyfile
-        - ./ssl:/root/.caddy/acme/acme-v02.api.letsencrypt.org/sites
+        - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+        - ./ssl:/data/caddy/certificates/acme-v02.api.letsencrypt.org-directory
+      extra_hosts:
+              - "host.docker.internal:host-gateway"
