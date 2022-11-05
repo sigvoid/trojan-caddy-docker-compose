@@ -6,7 +6,7 @@ RUN apk add \
         gcc \
         g++ \
         libtool \
-    && git clone --branch=latest https://github.com/fregie/trojan-go.git \
+    && git clone --branch=latest https://github.com/gfw-report/trojan-go.git \
     && cd trojan-go \
     && make trojan-go
 
